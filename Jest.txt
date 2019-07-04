@@ -1,0 +1,18 @@
+Jest
+
+使用方法
+npm install --save-dev jest
+package.json に以下を追加します。
+
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
+
+npm run test
+
+おすすめの点
+依存が少なく高機能です、すぐにテストコードを書き始められます。
+
+サンプル
