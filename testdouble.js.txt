@@ -1,0 +1,128 @@
+testdouble.js
+
+使用方法
+npm install --save-dev testdouble
+//stub.js
+var td = require('testdouble');
+//webpack.config.js
+if(NODE_ENV !== 'production') {
+  require('./stub.js'); // testdouble.jsのスタブ設定用ファイル
+}
+メソッド
+td.replaceを用いると、指定したメソッドを置き換えられる。
+td.whenを使って。メソッドに渡す引数に応じて返り値を変える。
+
+API
+td.replaceでAPIリクエストを投げるメソッドを置き換えることで、擬似的にAPIのスタブを実現できる。
+td.whenにdelayオプションを設定すると、非同期通信のレスポンス待ちが再現できる。
+
+引数
+td.matchersを用いて、渡す引数に応じて挙動を変える。
+td.matchers.anything()ではどんな引数でもOKとなる。
+
+型指定
+td.matchers.isA()ではNumberやStringといった引数の型を指定できる。
+td.matchers.contains()では特定の文字列を含むかの指定ができる。
+
+
+おすすめ点
+互換性が強く、外部への依存が少なく、開発効率を上げることができる。
+
+サンプル
+
+メソッド
+
+td.replaceで指定したメソッドを置き換え
+********************************************************
+var text = {
+  show: function(str) { console.log(str); }
+};
+
+text.show('test'); // test
+
+td.replace(text, 'show', (str) => { console.log(`show:${str}`) });
+
+text.show('test'); // show:test
+********************************************************
+td.whenでメソッドに渡す引数に応じて返り値を変えたい場合
+********************************************************
+var browser = {
+  isIE: function(ua) { return /Trident|MSIE/.test(ua); }
+};
+
+browser.isIE('Trident'); // true
+browser.isIE('MSIE'); // true
+
+td.replace(browser, 'isIE');
+td.when(browser.isIE('Trident')).thenReturn(true);
+td.when(browser.isIE('MSIE')).thenReturn(false);
+
+browser.isIE('Trident'); // true
+browser.isIE('MSIE'); // false
+********************************************************
+
+API
+
+td.replaceで擬似的にAPIのスタブを実現
+********************************************************
+var ajax = {
+  get: function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.onreadystatechange = function(e) {
+      if(this.readyState === 4) {
+        if(this.status === 200) {
+          var res = JSON.parse(this.responseText);
+          callback(res);
+        }
+      }
+    }
+    xhr.send(null);
+  }
+};
+
+td.replace(ajax, 'get');
+td.when(ajax.get('http://api.example.com/get')).thenCallback(JSON.parse('{"status":"success"}'));
+
+ajax.get('http://api.example.com/get', function(res) {
+  console.log(res); // {"status":"success"}
+});
+********************************************************
+td.whenにdelayオプションを設定すると、待ち時間中の画面状態も確認できる。
+********************************************************
+td.when(hoge.get('http://api.example.com/get'), { delay: 500 }).thenCallback(JSON.parse('{"status":"success"}'));
+********************************************************
+引数
+
+td.matchers.anything()ではどんな引数でもOKとなる
+********************************************************
+var hoge = td.function();
+
+td.when(hoge(td.matchers.anything())).thenReturn('fuga');
+
+hoge('test'); // fuga
+hoge(true); // fuga
+hoge(9); // fuga
+hoge(); // undefined
+hoge('test', true); // undefined
+********************************************************
+型指定
+
+td.matchers.isA()ではNumberやStringといった引数の型を指定できる。
+********************************************************
+var hoge = td.function();
+
+td.when(hoge(td.matchers.isA(Number))).thenReturn('fuga');
+
+hoge(9); // fuga
+hoge('nine'); // undefined
+********************************************************
+td.matchers.contains()では特定の文字列を含むかの指定ができる
+********************************************************
+var hoge = td.function();
+
+td.when(hoge(td.matchers.contains('nine'))).thenReturn('fuga');
+
+hoge('nine'); // fuga
+hoge('none'); // undefined
+********************************************************
