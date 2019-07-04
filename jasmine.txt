@@ -1,0 +1,90 @@
+jasmine
+https://qiita.com/opengl-8080/items/cf3acafda9756f4b04c9
+http://viewpoint-nk.github.io/blog/jasmine/jasmine-basic.html
+おすすめ点
+
+品質を担保できる
+機能が追加された場合にエラーを検知できる
+
+使用方法
+
+git clone https://github.com/pivotal/jasmine.git
+jasmine テストコードについて
+jasmineのテストコードはSuite(クラス)とSpec(メソッド)の２つで構成されている
+Suiteはdescribe関数、Specはit関数で宣言する
+値のチェックはexpect(x).toBe(x);で実行する
+expect()にテストしたい値、toBe()に期待する結果を入れる
+toBe()以外にも多数のメソッドがある
+メソッド				内容
+expect(foo).toBe(1);			foo === 1 であるか
+expect(foo).toEqual(1);		文字列が正規表現にマッチするか
+expect(foo).toMatch(/^[a-z]+$/);	foo === 1 であるか
+expect(element).toExist();		要素が存在するか
+expect(foo.func).toBeDefined();	変数が定義済みか
+expect(foo.func).toBeUndefined();	変数が未定義か
+expect(foo).toBeNull();		変数がnullか
+expect(foo).toBeTruthy();		変数が true 相当の値か（true, 1, “a” など）
+expect(foo).toBeFalsy();		変数が false 相当の値か（false, 0, 空文字列など）
+expect([1, 2, 3]).toContain(3);		配列が値を含んでいるか
+expect(foo).toBeLessThan(2);		foo < 2 であるか
+expect(foo).toBeGreaterThan(0);	foo > 0 であるか
+expect(3.141592).toBeCloseTo(3, 0);	小数が有効数字 0 ケタで 3 に等しいか
+expect(func).toThrow();		関数 func が何らかの例外を投げることを期待
+
+サンプル
+
+GitHubからダウンロードしたファイルで、必要なファイルはlib/jasmine-coreフォルダ内にある4つのファイル。
+
+jasmine.css
+jasmine.js
+jasmine-html.js
+boot.js
+上記4つのファイルに加え、テスト対象のJSファイル(sample.js)、テストコードファイル(sample_test.js)も読み込んだHTMLファイルを作成します。
+ boot.jsはjasmine.jsより後で、且つテスト対象コードよりも前に読み込む。
+
+//sample.js
+*************************************************
+function calc(a, b){
+    return a + b;
+}
+*************************************************
+//sample_test.js
+*************************************************
+describe('関数のテスト', function() {
+    it('1 + 1 = 2である', function(){
+        expect(calc(1, 1)).toBe(2);
+    });
+});
+*************************************************
+//index.html
+*************************************************
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jasmin sample</title>
+    <link rel="stylesheet" type="text/css" href="jasmine/jasmine.css">
+    <script type="text/javascript" src="jasmine/jasmine.js"></script>
+    <script type="text/javascript" src="jasmine/jasmine-html.js"></script>
+    <script type="text/javascript" src="jasmine/boot.js"></script>
+    <script type="text/javascript" src="sample.js"></script>
+    <script type="text/javascript" src="sample_test.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+*************************************************
+
+ディレクトリはこのような感じになります。
+
+jasmine_test
+│  index.html
+│  sample.js
+│  sample_test.js
+│
+├─jasmine
+│  boot.js
+│  jasmine-html.js
+│  jasmine.css
+│  jasmine.js
